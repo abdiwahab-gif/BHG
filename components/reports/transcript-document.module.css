@@ -1,0 +1,101 @@
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  position: relative;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Security-style decorative border using theme primary */
+.borderFrame {
+  position: relative;
+  padding: 12mm;
+}
+
+.borderFrame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  border: 2px solid hsl(var(--primary));
+  pointer-events: none;
+}
+
+.borderFrame::after {
+  content: "";
+  position: absolute;
+  inset: 4mm;
+  border-radius: 4px;
+  border: 1px solid hsl(var(--primary));
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.pattern {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      hsla(var(--primary), 0.25) 0,
+      hsla(var(--primary), 0.25) 2px,
+      transparent 2px,
+      transparent 10px
+    );
+}
+
+.watermark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0.06;
+}
+
+.termBlock {
+  /* Allow page breaks between term blocks */
+  break-inside: auto;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 7mm;
+  }
+
+  .borderFrame {
+    padding: 8mm;
+  }
+
+  .borderFrame::after {
+    inset: 3mm;
+  }
+
+  .page {
+    margin: 0;
+  }
+
+  /* Prevent individual table rows from splitting across pages */
+  .page table {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  .page tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .page thead {
+    display: table-header-group;
+  }
+
+  .page tfoot {
+    display: table-footer-group;
+  }
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Circle background -->
+  <circle cx="50" cy="50" r="45" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+  
+  <!-- Letter A -->
+  <path d="M25 75 L35 45 L50 75 M30 65 L45 65" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Letter U -->
+  <path d="M55 45 L55 65 Q55 75 65 75 Q75 75 75 65 L75 45" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Small decorative elements -->
+  <circle cx="20" cy="25" r="2" fill="white" opacity="0.8"/>
+  <circle cx="80" cy="25" r="2" fill="white" opacity="0.8"/>
+  <circle cx="30" cy="20" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="70" cy="20" r="1.5" fill="white" opacity="0.6"/>
+  
+  <!-- Bottom text curve -->
+  <path id="curve" d="M 20 80 Q 50 85 80 80" fill="none"/>
+  <text font-family="Arial, sans-serif" font-size="8" fill="white" opacity="0.9">
+    <textPath href="#curve" startOffset="50%" text-anchor="middle">UNIVERSITY</textPath>
+  </text>
+</svg>
