@@ -63,6 +63,7 @@
     "embla-carousel-react": "8.5.1",
     "framer-motion": "latest",
     "geist": "latest",
+    "gsap": "^3.15.0",
     "input-otp": "1.4.1",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.454.0",

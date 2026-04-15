@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { getAuthHeaders } from "@/lib/client-auth"
+import { ScrollReveal } from "@/components/motion/scroll-reveal"
 
 type FundraisingSummary = {
   success: boolean
@@ -137,8 +138,8 @@ export default function FundraisingDashboardPage() {
       <div className="container mx-auto px-4 sm:px-6 py-8 space-y-6">
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          <Card>
+        <ScrollReveal className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <Card className="bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Members</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -148,7 +149,7 @@ export default function FundraisingDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Male Members</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -158,7 +159,7 @@ export default function FundraisingDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Female Members</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -168,7 +169,7 @@ export default function FundraisingDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Donors</CardTitle>
               <HandCoins className="h-4 w-4 text-muted-foreground" />
@@ -178,7 +179,7 @@ export default function FundraisingDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Balance</CardTitle>
               <Wallet className="h-4 w-4 text-muted-foreground" />
@@ -190,10 +191,11 @@ export default function FundraisingDashboardPage() {
               </p>
             </CardContent>
           </Card>
-        </div>
+        </ScrollReveal>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
+          <ScrollReveal>
+            <Card className="bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-base">Top Deggen</CardTitle>
               <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -214,9 +216,11 @@ export default function FundraisingDashboardPage() {
                 </div>
               )}
             </CardContent>
-          </Card>
+            </Card>
+          </ScrollReveal>
 
-          <Card>
+          <ScrollReveal>
+            <Card className="bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-base">Top Jobs</CardTitle>
               <Briefcase className="h-4 w-4 text-muted-foreground" />
@@ -237,38 +241,41 @@ export default function FundraisingDashboardPage() {
                 </div>
               )}
             </CardContent>
-          </Card>
+            </Card>
+          </ScrollReveal>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Income vs Expenses (last 6 months)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!mounted ? (
-              <div className="h-[320px] w-full flex items-center justify-center text-sm text-muted-foreground">
-                Loading chart...
-              </div>
-            ) : (
-              <ChartContainer
-                className="h-[320px] w-full"
-                config={{
-                  income: { label: "Income", color: "hsl(var(--chart-1))" },
-                  expense: { label: "Expenses", color: "hsl(var(--chart-2))" },
-                }}
-              >
-                <BarChart data={series} margin={{ left: 8, right: 8 }}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis dataKey="month" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} width={56} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="income" fill="var(--color-income)" radius={4} />
-                  <Bar dataKey="expense" fill="var(--color-expense)" radius={4} />
-                </BarChart>
-              </ChartContainer>
-            )}
-          </CardContent>
-        </Card>
+        <ScrollReveal>
+          <Card className="bg-card/60 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Income vs Expenses (last 6 months)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!mounted ? (
+                <div className="h-[320px] w-full flex items-center justify-center text-sm text-muted-foreground">
+                  Loading chart...
+                </div>
+              ) : (
+                <ChartContainer
+                  className="h-[320px] w-full"
+                  config={{
+                    income: { label: "Income", color: "hsl(var(--chart-1))" },
+                    expense: { label: "Expenses", color: "hsl(var(--chart-2))" },
+                  }}
+                >
+                  <BarChart data={series} margin={{ left: 8, right: 8 }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis dataKey="month" tickLine={false} axisLine={false} />
+                    <YAxis tickLine={false} axisLine={false} width={56} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="income" fill="var(--color-income)" radius={4} />
+                    <Bar dataKey="expense" fill="var(--color-expense)" radius={4} />
+                  </BarChart>
+                </ChartContainer>
+              )}
+            </CardContent>
+          </Card>
+        </ScrollReveal>
       </div>
     </motion.div>
   )

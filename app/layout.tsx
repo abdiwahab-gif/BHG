@@ -7,16 +7,17 @@ import { Suspense } from "react"
 import { LayoutWrapper } from "@/components/layout/layout-wrapper"
 import { QueryClientProvider } from "@/components/providers/query-client-provider"
 import { ThemeProvider } from "@/components/theme-provider"
+import { PremiumEffects } from "@/components/premium/premium-effects"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Academic Management System",
-  description: "Modern academic management system",
+  title: "Bah Habar Gobe",
+  description: "Bah Habar Gobe community management system",
   generator: "v0.app",
   icons: {
-    icon: "/amoud-logo.png",
-    apple: "/amoud-logo.png",
+    icon: "/api/brand/logo",
+    apple: "/api/brand/logo",
   },
 }
 
@@ -36,6 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
+          <PremiumEffects />
           <QueryClientProvider>
             <LayoutWrapper>
               <Suspense fallback={null}>{children}</Suspense>

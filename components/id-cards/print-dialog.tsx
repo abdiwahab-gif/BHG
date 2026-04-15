@@ -325,9 +325,9 @@ export function PrintDialog({
                   <div class="card-front">
                     <div class="card-header">
                       <div style="display: flex; align-items: center; gap: 8px;">
-                        <img src="/amoud-logo.png" alt="Logo" class="card-logo" />
+                        <img src="/api/brand/logo" alt="Logo" class="card-logo" />
                         <div>
-                          <div style="font-weight: bold; font-size: 9px;">AMOUD UNIVERSITY</div>
+                          <div style="font-weight: bold; font-size: 9px;">BAH HABAR GOBE</div>
                           <div style="font-size: 8px; opacity: 0.9;">Management System</div>
                         </div>
                       </div>
@@ -390,7 +390,7 @@ export function PrintDialog({
                     <div class="card-footer">
                       <span>${new Date(card.expiryDate) < new Date() ? 'EXPIRED' : 'VALID'}</span>
                       <span>${card.type === 'student' ? 'STUDENT CARD' : 'STAFF CARD'}</span>
-                      <span>AU-MS</span>
+                      <span>BHG-MS</span>
                     </div>
                   </div>
                 </div>
@@ -399,12 +399,12 @@ export function PrintDialog({
                   <div class="card-back">
                     <div class="card-back-content">
                       <div class="back-header">
-                        <div style="font-weight: bold; color: #d97706;">AMOUD UNIVERSITY</div>
+                        <div style="font-weight: bold; color: #d97706;">BAH HABAR GOBE</div>
                         <div>Official Identification Card</div>
                       </div>
                       <div class="back-terms">
                         <div style="font-weight: bold; margin-bottom: 4px;">Terms of Use:</div>
-                        <div>• This card is property of Amoud University</div>
+                        <div>• This card is property of Bah Habar Gobe</div>
                         <div>• Must be carried at all times on campus</div>
                         <div>• Report lost/stolen cards immediately</div>
                         <div>• Valid only with photo and signature</div>
@@ -415,7 +415,7 @@ export function PrintDialog({
                         <div>✉️ info@amouduniversity.edu.so</div>
                       </div>
                       <div class="back-footer">
-                        <span>© 2024 Amoud University</span>
+                        <span>© 2024 Bah Habar Gobe</span>
                         <span>Authority Signature: ___________</span>
                       </div>
                     </div>

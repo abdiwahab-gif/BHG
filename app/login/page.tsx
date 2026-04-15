@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, LogIn, GraduationCap } from "lucide-react"
+import { Loader2, LogIn } from "lucide-react"
 import Link from "next/link"
 import { setAuthSession } from "@/lib/session-client"
 
@@ -82,7 +82,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+    <div className="relative min-h-screen flex items-center justify-center bg-background/40 p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -94,15 +94,15 @@ export default function LoginPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="inline-flex items-center justify-center w-20 h-20 bg-blue-600 text-white rounded-2xl mb-4 shadow-lg"
+            className="inline-flex items-center justify-center w-20 h-20 bg-black/5 dark:bg-white/5 rounded-2xl mb-4 shadow-lg backdrop-blur-sm"
           >
-            <GraduationCap className="w-12 h-12" />
+            <img src="/api/brand/logo" alt="Bah Habar Gobe" className="w-14 h-14 object-contain" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Academic Management</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Sign in to your account</p>
+          <h1 className="text-3xl font-bold text-foreground">Bah Habar Gobe</h1>
+          <p className="text-muted-foreground mt-2">Sign in to your account</p>
         </div>
 
-        <Card className="shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+        <Card className="shadow-xl border-0 bg-card/70 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Welcome Back</CardTitle>
             <CardDescription>Enter your credentials to access the system</CardDescription>
@@ -119,7 +119,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="bg-white dark:bg-gray-900"
+                  className="bg-background"
                 />
               </div>
               <div className="space-y-2">
@@ -132,7 +132,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="bg-white dark:bg-gray-900"
+                  className="bg-background"
                 />
               </div>
 
@@ -142,12 +142,12 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="text-xs text-blue-800 dark:text-blue-300 font-medium">Demo Credentials:</p>
-                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+              <div className="bg-muted/60 p-3 rounded-lg border border-border">
+                <p className="text-xs text-foreground font-medium">Demo Credentials:</p>
+                <p className="text-xs text-muted-foreground mt-1">
                   Email: <span className="font-mono">admin@academic.edu</span>
                 </p>
-                <p className="text-xs text-blue-700 dark:text-blue-400">
+                <p className="text-xs text-muted-foreground">
                   Password: <span className="font-mono">admin123</span>
                 </p>
               </div>
@@ -175,7 +175,7 @@ export default function LoginPage() {
           </form>
         </Card>
 
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           Need help? Contact your system administrator
         </p>
       </motion.div>

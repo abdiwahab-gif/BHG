@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Login - Academic Management System",
-  description: "Sign in to access the academic management system",
+  title: "Login - Bah Habar Gobe",
+  description: "Sign in to your account",
 }
 
 export default function LoginLayout({

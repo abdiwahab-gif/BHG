@@ -84,7 +84,7 @@ export function IDCardPreview({ card, showPrintButton = true }: IDCardPreviewPro
             <div className="flex-1 flex flex-col justify-between text-xs">
               {/* University header */}
               <div className="text-center mb-2">
-                <div className="font-bold text-gray-800 text-sm">AMOUD UNIVERSITY</div>
+                <div className="font-bold text-gray-800 text-sm">BAH HABAR GOBE</div>
                 <div className="text-gray-600 text-xs">STUDENT ID CARD</div>
               </div>
               
@@ -133,12 +133,12 @@ export function IDCardPreview({ card, showPrintButton = true }: IDCardPreviewPro
               <div className="text-center">
                 <div className="w-12 h-12 mx-auto mb-2 bg-gray-100 rounded-full p-1">
                   <img
-                    src="/amoud-logo.png"
-                    alt="Amoud University"
+                    src="/api/brand/logo"
+                    alt="Bah Habar Gobe"
                     className="w-full h-full object-contain"
                   />
                 </div>
-                <div className="font-bold text-gray-800 text-xs">AMOUD UNIVERSITY</div>
+                <div className="font-bold text-gray-800 text-xs">BAH HABAR GOBE</div>
                 <div className="text-gray-600 text-xs">BORAMA, SOMALILAND</div>
               </div>
               
@@ -169,7 +169,7 @@ export function IDCardPreview({ card, showPrintButton = true }: IDCardPreviewPro
               <div className="text-center">
                 <div className="font-bold text-gray-900 text-xs mb-2">TERMS OF USE</div>
                 <div className="text-xs text-gray-800 space-y-1 leading-relaxed">
-                  <div>• This card is property of Amoud University</div>
+                  <div>• This card is property of Bah Habar Gobe</div>
                   <div>• Must be worn visibly on campus</div>
                   <div>• Report if lost or stolen</div>
                   <div>• Non-transferable</div>

@@ -1,4 +1,4 @@
-# Amoud University Management System
+# Bah Habar Gobe Management System
 
 **Version: 0.1.1** - Testing Vercel auto-deployment with build configuration changes
 

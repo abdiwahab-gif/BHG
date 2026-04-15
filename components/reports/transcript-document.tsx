@@ -66,7 +66,7 @@ export function TranscriptDocument({
           <div className="grid grid-cols-[120px_1fr_140px] items-start gap-3">
             <div className="shrink-0 ml-1 flex flex-col items-center">
               <div className="h-16 w-16 border border-border bg-card/50 flex items-center justify-center overflow-hidden">
-                <img src="/amoud-logo.png" alt="System logo" className="h-full w-full object-contain" />
+                <img src="/api/brand/logo" alt="System logo" className="h-full w-full object-contain" />
               </div>
               <div className="mt-1 text-[9px] leading-none text-muted-foreground text-center">
                 Vehicle for Peace &amp;
@@ -195,7 +195,7 @@ export function TranscriptDocument({
                 A cumulative grade point average (CGPA) of 2.00 is required to remain in good standing and to graduate.
               </div>
               <div className="mt-2">
-                This document constitutes an official transcript only when it bears the Amoud University embossed Seal and this watermark.
+                This document constitutes an official transcript only when it bears the Bah Habar Gobe embossed Seal and this watermark.
               </div>
             </div>
           ) : null}

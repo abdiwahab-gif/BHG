@@ -9,6 +9,7 @@ import { Sidebar } from "./sidebar"
 import { MobileHeader } from "./mobile-header"
 import { UserDropdown } from "./user-dropdown"
 import { ThemeToggleButton } from "@/components/ui/theme-toggle"
+import { CommandPalette, CommandPaletteButton } from "@/components/layout/command-palette"
 
 interface SidebarLayoutProps {
   children: React.ReactNode
@@ -123,6 +124,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               transition={{ delay: 0.2 }}
               className="flex items-center gap-2"
             >
+              <CommandPaletteButton />
               <ThemeToggleButton />
               <UserDropdown />
             </motion.div>
@@ -138,6 +140,21 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
         >
           {children}
         </motion.main>
+
+        {/* Sticky CTA (mobile) */}
+        <div className="fixed bottom-4 left-1/2 z-40 w-[min(92vw,560px)] -translate-x-1/2 lg:hidden">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event("bhg:command-palette:open"))}
+            className="flex w-full items-center justify-between rounded-full border border-border bg-background/80 px-4 py-3 text-sm shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60"
+            aria-label="Open quick actions"
+          >
+            <span className="text-muted-foreground">Quick actions</span>
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs text-foreground">Ctrl K</span>
+          </button>
+        </div>
+
+        <CommandPalette />
       </motion.div>
     </div>
   )

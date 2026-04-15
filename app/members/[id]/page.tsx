@@ -8,6 +8,7 @@ import { ArrowLeft, Edit, Home, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getAuthHeaders } from "@/lib/client-auth"
 
 type MemberDetails = {
   id: string
@@ -55,7 +56,10 @@ export default function MemberViewPage({ params }: { params: { id: string } }) {
       setLoading(true)
       setError(null)
       try {
-        const response = await fetch(`/api/members/${encodeURIComponent(memberId)}`, { signal: controller.signal })
+        const response = await fetch(`/api/members/${encodeURIComponent(memberId)}`, {
+          signal: controller.signal,
+          headers: { ...getAuthHeaders() },
+        })
         const payload = (await response.json().catch(() => null)) as MemberDetailsResponse | null
         if (!response.ok) {
           throw new Error(payload?.error || `Failed to load member (HTTP ${response.status})`)

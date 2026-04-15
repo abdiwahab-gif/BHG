@@ -250,7 +250,7 @@ export async function buildTranscriptDataWithOptions(
     : toIsoDate(student.enrollmentDate || student.createdAt) || ""
 
   return {
-    universityName: "AMOUD UNIVERSITY",
+    universityName: "BAH HABAR GOBE",
     subtitle: options.subtitle || "Student’s Official Transcript",
     student: {
       studentName: studentName || "Student",

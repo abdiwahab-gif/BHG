@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     const baseUrl = getBaseUrl(request)
     const inviteUrl = `${baseUrl}/register?token=${encodeURIComponent(token)}`
 
-    const subject = "You're invited to Academic Management"
+    const subject = "You're invited to Bah Habar Gobe"
     const text = `You have been invited to register an account.\n\nComplete registration here:\n${inviteUrl}\n\nThis link expires in 48 hours.`
 
     const emailResult = await sendEmail({ to: email, subject, text })

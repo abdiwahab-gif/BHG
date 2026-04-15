@@ -39,7 +39,6 @@ import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import Image from "next/image"
 
 interface SidebarProps {
   collapsed: boolean
@@ -71,7 +70,7 @@ type MenuSection = {
   items: MenuItem[]
 }
 
-const SIDEBAR_SCROLL_KEY = "amoud:sidebar:scrollTop"
+const SIDEBAR_SCROLL_KEY = "bhg:sidebar:scrollTop"
 
 const menuItems: MenuItem[] = [
   {
@@ -447,9 +446,9 @@ export function Sidebar({ collapsed, onCollapsedChange, isMobile = false, onMobi
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.3 }}
           >
-            <Image
-              src="/amoud-logo.png"
-              alt="Amoud University Logo"
+            <img
+              src="/api/brand/logo"
+              alt="Bah Habar Gobe logo"
               width={32}
               height={32}
               className="w-full h-full object-contain"
@@ -464,7 +463,7 @@ export function Sidebar({ collapsed, onCollapsedChange, isMobile = false, onMobi
                 transition={{ duration: 0.2 }}
                 className="font-semibold text-sidebar-foreground whitespace-nowrap"
               >
-                Amoud University
+                Bah Habar Gobe
               </motion.span>
             )}
           </AnimatePresence>
@@ -586,7 +585,7 @@ export function Sidebar({ collapsed, onCollapsedChange, isMobile = false, onMobi
         transition={{ delay: 0.3 }}
       >
         <div className="text-xs text-sidebar-foreground/50 text-center">
-          {!collapsed || isMobile ? "Amoud University MS" : "AU MS"}
+          {!collapsed || isMobile ? "Bah Habar Gobe" : "BHG"}
         </div>
       </motion.div>
     </motion.div>
