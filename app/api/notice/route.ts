@@ -1,6 +1,8 @@
+import crypto from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import type { Notice, NoticeAttachment, NoticeFilters, NoticeResponse, NoticeTarget } from "@/types/notice"
 import { dbQuery } from "@/lib/db"
+import { requireAuth } from "@/lib/server-auth"
 
 type DbNoticeRow = {
   id: string
@@ -143,6 +145,9 @@ function normalizeFilterValue(value: string | null): string | undefined {
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureNoticesTable()
 
     const { searchParams } = new URL(request.url)
@@ -166,6 +171,11 @@ export async function GET(request: NextRequest) {
     const where: string[] = []
     const params: any[] = []
 
+    if (!auth.isAdmin) {
+      where.push("createdById = ?")
+      params.push(auth.userId)
+    }
+
     if (filters.type) {
       where.push("type = ?")
       params.push(filters.type)
@@ -178,7 +188,7 @@ export async function GET(request: NextRequest) {
       where.push("status = ?")
       params.push(filters.status)
     }
-    if (filters.createdBy) {
+    if (auth.isAdmin && filters.createdBy) {
       where.push("createdById = ?")
       params.push(filters.createdBy)
     }
@@ -240,6 +250,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureNoticesTable()
 
     const body = await request.json().catch(() => null)
@@ -264,10 +277,15 @@ export async function POST(request: NextRequest) {
     }
 
     const id = crypto.randomUUID()
+    const userRows = await dbQuery<any>("SELECT id, name, role FROM users WHERE id = ? LIMIT 1", [auth.userId])
+    const user = userRows?.[0]
+    if (!user?.id) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+    }
     const createdBy = {
-      id: "current_user",
-      name: "Current User",
-      role: "Administrator",
+      id: String(user.id),
+      name: String(user.name || auth.email || ""),
+      role: String(user.role || auth.role),
     }
 
     const publishDate = new Date(publishDateRaw)

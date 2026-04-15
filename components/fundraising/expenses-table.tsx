@@ -5,7 +5,7 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { Edit, Plus, Trash2 } from "lucide-react"
 
-import { getAuditHeaders } from "@/lib/client-audit"
+import { getAuthAndAuditHeaders, getAuthHeaders } from "@/lib/client-auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -47,7 +47,7 @@ export function ExpensesTable() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch("/api/expenses?page=1&limit=200", { signal })
+      const res = await fetch("/api/expenses?page=1&limit=200", { signal, headers: { ...getAuthHeaders() } })
       const payload = (await res.json().catch(() => null)) as ExpensesListResponse | null
       if (!res.ok) throw new Error(payload?.error || `Failed to load expenses (HTTP ${res.status})`)
       setItems(Array.isArray(payload?.expenses) ? payload!.expenses : [])
@@ -71,7 +71,7 @@ export function ExpensesTable() {
     try {
       const res = await fetch(`/api/expenses/${encodeURIComponent(id)}`, {
         method: "DELETE",
-        headers: { ...getAuditHeaders() },
+        headers: { ...getAuthAndAuditHeaders() },
       })
       const payload = (await res.json().catch(() => null)) as { error?: string } | null
       if (!res.ok) throw new Error(payload?.error || `Failed to delete (HTTP ${res.status})`)

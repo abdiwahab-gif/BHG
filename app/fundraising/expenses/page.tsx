@@ -29,7 +29,7 @@ export default function ExpensesPage() {
               </Link>
               <span>/</span>
               <Link href="/fundraising" className="hover:text-foreground transition-colors">
-                Fundraising
+                Dashboard
               </Link>
               <span>/</span>
               <span>Expenses</span>

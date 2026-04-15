@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import type { NoticeStats } from "@/types/notice"
 import { dbQuery } from "@/lib/db"
+import { requireAuth } from "@/lib/server-auth"
 
 async function ensureNoticesTable(): Promise<void> {
   await dbQuery(
@@ -33,13 +34,19 @@ async function ensureNoticesTable(): Promise<void> {
   )
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureNoticesTable()
 
     const now = new Date()
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
     const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+
+    const whereSql = auth.isAdmin ? "" : " WHERE createdById = ?"
+    const whereParams = auth.isAdmin ? [monthStart, nextMonthStart] : [monthStart, nextMonthStart, auth.userId]
 
     const rows = await dbQuery<any>(
       `SELECT
@@ -49,8 +56,8 @@ export async function GET() {
         SUM(status = 'archived') as archived,
         SUM(priority = 'urgent') as urgent,
         SUM(publishDate >= ? AND publishDate < ?) as thisMonth
-      FROM academic_module_notices`,
-      [monthStart, nextMonthStart]
+      FROM academic_module_notices${whereSql}`,
+      whereParams
     )
 
     const row = rows?.[0] || {}

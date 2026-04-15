@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2 } from "lucide-react"
+import { getAuthHeaders } from "@/lib/client-auth"
 
 const donationSchema = z.object({
   amount: z.preprocess(
@@ -54,7 +55,7 @@ export function DonationFormCard({ onSuccess }: { onSuccess?: () => void }) {
     try {
       const response = await fetch("/api/donations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify(data),
       })
 

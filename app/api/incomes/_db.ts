@@ -2,26 +2,42 @@ import { dbQuery } from "@/lib/db"
 
 export type DbIncomeRow = {
   id: string
+  createdById?: string | null
   amount: string | number
   donorName: string | null
   createdAt: string
   updatedAt: string
 }
 
+async function columnExists(tableName: string, columnName: string): Promise<boolean> {
+  const rows = await dbQuery<any>(
+    "SELECT COUNT(*) as total FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?",
+    [tableName, columnName],
+  )
+  return Number(rows?.[0]?.total || 0) > 0
+}
+
 export async function ensureIncomesTable(): Promise<void> {
   await dbQuery(
     `CREATE TABLE IF NOT EXISTS academic_module_incomes (
       id VARCHAR(36) PRIMARY KEY,
+      createdById VARCHAR(36) NULL,
       amount DECIMAL(12,2) NOT NULL,
       donorName VARCHAR(255) NULL,
 
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-      INDEX idx_income_createdAt (createdAt)
+      INDEX idx_income_createdAt (createdAt),
+      INDEX idx_income_createdById (createdById)
     ) ENGINE=InnoDB`,
     [],
   )
+
+  if (!(await columnExists("academic_module_incomes", "createdById"))) {
+    await dbQuery("ALTER TABLE academic_module_incomes ADD COLUMN createdById VARCHAR(36) NULL AFTER id", [])
+    await dbQuery("CREATE INDEX idx_income_createdById ON academic_module_incomes (createdById)", [])
+  }
 }
 
 function toIsoDateTime(value: unknown): string {

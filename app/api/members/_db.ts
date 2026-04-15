@@ -2,6 +2,7 @@ import { dbQuery } from "@/lib/db"
 
 export type DbMemberRow = {
   id: string
+  createdById?: string | null
   fullName: string
   gender: string | null
   mobileNumber: string
@@ -28,6 +29,8 @@ export async function ensureMembersTable(): Promise<void> {
       id VARCHAR(36) PRIMARY KEY,
       sequence BIGINT NOT NULL AUTO_INCREMENT UNIQUE,
 
+      createdById VARCHAR(36) NULL,
+
       fullName VARCHAR(255) NOT NULL,
       gender VARCHAR(10) NULL,
       mobileNumber VARCHAR(50) NOT NULL,
@@ -44,7 +47,8 @@ export async function ensureMembersTable(): Promise<void> {
       UNIQUE KEY uniq_member_email (email),
       INDEX idx_member_mobile (mobileNumber),
       INDEX idx_member_fullName (fullName),
-      INDEX idx_member_createdAt (createdAt)
+      INDEX idx_member_createdAt (createdAt),
+      INDEX idx_member_createdById (createdById)
     ) ENGINE=InnoDB`,
     [],
   )
@@ -57,6 +61,12 @@ export async function ensureMembersTable(): Promise<void> {
   // Backfill gender column if the table existed previously.
   if (!(await columnExists("academic_module_members", "gender"))) {
     await dbQuery("ALTER TABLE academic_module_members ADD COLUMN gender VARCHAR(10) NULL AFTER fullName", [])
+  }
+
+  // Backfill createdById column if the table existed previously.
+  if (!(await columnExists("academic_module_members", "createdById"))) {
+    await dbQuery("ALTER TABLE academic_module_members ADD COLUMN createdById VARCHAR(36) NULL AFTER sequence", [])
+    await dbQuery("CREATE INDEX idx_member_createdById ON academic_module_members (createdById)", [])
   }
 }
 

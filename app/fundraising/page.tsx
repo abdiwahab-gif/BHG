@@ -9,6 +9,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { getAuthHeaders } from "@/lib/client-auth"
 
 type FundraisingSummary = {
   success: boolean
@@ -46,7 +47,10 @@ export default function FundraisingDashboardPage() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch("/api/fundraising/summary", { signal: controller.signal })
+        const res = await fetch("/api/fundraising/summary", {
+          signal: controller.signal,
+          headers: { ...getAuthHeaders() },
+        })
         const payload = (await res.json().catch(() => null)) as FundraisingSummary | null
         if (!res.ok) throw new Error(payload?.error || `Failed to load summary (HTTP ${res.status})`)
         setData(payload)
@@ -87,7 +91,7 @@ export default function FundraisingDashboardPage() {
                 Home
               </Link>
               <span>/</span>
-              <span>Fundraising</span>
+              <span>Dashboard</span>
             </div>
           </div>
 
@@ -98,7 +102,7 @@ export default function FundraisingDashboardPage() {
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground font-sans text-balance">
-                  Fundraising Dashboard
+                  Dashboard
                 </h1>
                 <p className="text-muted-foreground text-base sm:text-lg">Members, donors, income and expenses overview</p>
               </div>

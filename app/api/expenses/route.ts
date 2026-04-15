@@ -5,6 +5,7 @@ import { z } from "zod"
 import { dbQuery } from "@/lib/db"
 import { AuditLogger } from "@/lib/audit-logger"
 import { ensureExpensesTable, toExpenseDto, type DbExpenseRow } from "./_db"
+import { requireAuth } from "@/lib/server-auth"
 
 export const runtime = "nodejs"
 
@@ -22,6 +23,9 @@ const createExpenseSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureExpensesTable()
 
     const { searchParams } = new URL(request.url)
@@ -32,9 +36,12 @@ export async function GET(request: NextRequest) {
     const safePage = Number.isFinite(page) && page > 0 ? page : 1
     const offset = (safePage - 1) * safeLimit
 
+    const whereSql = auth.isAdmin ? "" : "WHERE createdById = ?"
+    const whereParams: unknown[] = auth.isAdmin ? [] : [auth.userId]
+
     const countRows = await dbQuery<RowDataPacket & { total: number }>(
-      "SELECT COUNT(*) as total FROM academic_module_expenses",
-      [],
+      `SELECT COUNT(*) as total FROM academic_module_expenses ${whereSql}`,
+      whereParams,
     )
     const total = Number(countRows?.[0]?.total || 0)
     const totalPages = Math.max(1, Math.ceil(total / Math.max(1, safeLimit)))
@@ -44,9 +51,10 @@ export async function GET(request: NextRequest) {
     const rows = await dbQuery<DbExpenseRow & RowDataPacket>(
       `SELECT id, amount, expenseType, createdAt, updatedAt
        FROM academic_module_expenses
+       ${whereSql}
        ORDER BY createdAt DESC
        LIMIT ${offsetClamped}, ${safeLimit}`,
-      [],
+      whereParams,
     )
 
     return NextResponse.json({
@@ -62,14 +70,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureExpensesTable()
 
-    const actorId = request.headers.get("x-user-id")
-    const actorRole = request.headers.get("x-user-role") || ""
-    const actorName = request.headers.get("x-user-name") || ""
-    if (!actorId) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
-    }
+    const actorId = auth.userId
+    const actorRole = auth.role
+    const actorName = request.headers.get("x-user-name") || auth.email || ""
 
     const parsed = createExpenseSchema.safeParse(await request.json())
     if (!parsed.success) {
@@ -78,8 +86,8 @@ export async function POST(request: NextRequest) {
 
     const id = crypto.randomUUID()
     await dbQuery(
-      "INSERT INTO academic_module_expenses (id, amount, expenseType) VALUES (?, ?, ?)",
-      [id, parsed.data.amount, parsed.data.expenseType],
+      "INSERT INTO academic_module_expenses (id, createdById, amount, expenseType) VALUES (?, ?, ?, ?)",
+      [id, auth.userId, parsed.data.amount, parsed.data.expenseType],
     )
 
     const rows = await dbQuery<DbExpenseRow & RowDataPacket>(

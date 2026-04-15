@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Notice, NoticeFilters, NoticeResponse, NoticeStats } from '@/types/notice'
+import { getAuthHeaders } from '@/lib/client-auth'
 
 interface UseNoticesOptions {
   initialFilters?: NoticeFilters
@@ -29,7 +30,7 @@ export function useNotices(options: UseNoticesOptions = {}) {
         )
       })
 
-      const response = await fetch(`/api/notice?${params}`)
+      const response = await fetch(`/api/notice?${params}`, { headers: { ...getAuthHeaders() } })
       if (!response.ok) {
         throw new Error('Failed to fetch notices')
       }
@@ -87,7 +88,7 @@ export function useNoticeStats() {
       setLoading(true)
       setError(null)
 
-      const response = await fetch('/api/notice/stats')
+      const response = await fetch('/api/notice/stats', { headers: { ...getAuthHeaders() } })
       if (!response.ok) {
         throw new Error('Failed to fetch notice stats')
       }
@@ -132,7 +133,7 @@ export function useNotice(id: string) {
       setLoading(true)
       setError(null)
 
-      const response = await fetch(`/api/notice/${id}`)
+      const response = await fetch(`/api/notice/${id}`, { headers: { ...getAuthHeaders() } })
       if (!response.ok) {
         throw new Error('Failed to fetch notice')
       }
@@ -151,7 +152,8 @@ export function useNotice(id: string) {
       const response = await fetch(`/api/notice/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify(updates)
       })
@@ -171,7 +173,8 @@ export function useNotice(id: string) {
   const deleteNotice = async () => {
     try {
       const response = await fetch(`/api/notice/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { ...getAuthHeaders() },
       })
 
       if (!response.ok) {

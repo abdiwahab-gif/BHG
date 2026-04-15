@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import type { Notice, NoticeAttachment, NoticeTarget } from "@/types/notice"
 import { dbQuery } from "@/lib/db"
+import { requireAuth } from "@/lib/server-auth"
 
 type DbNoticeRow = {
   id: string
@@ -129,26 +130,32 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureNoticesTable()
 
     const { id } = await params
     if (!id) {
       return NextResponse.json({ error: "Missing notice id" }, { status: 400 })
     }
+    const whereSql = auth.isAdmin ? "id = ?" : "id = ? AND createdById = ?"
+    const whereParams = auth.isAdmin ? [id] : [id, auth.userId]
+
     const rows = await dbQuery<DbNoticeRow>(
-      "SELECT id, title, content, type, priority, status, target, publishDate, expiryDate, createdById, createdByName, createdByRole, createdAt, updatedAt, attachments, views, pinned FROM academic_module_notices WHERE id = ? LIMIT 1",
-      [id]
+      `SELECT id, title, content, type, priority, status, target, publishDate, expiryDate, createdById, createdByName, createdByRole, createdAt, updatedAt, attachments, views, pinned FROM academic_module_notices WHERE ${whereSql} LIMIT 1`,
+      whereParams
     )
 
     if (!rows || rows.length === 0) {
       return NextResponse.json({ error: "Notice not found" }, { status: 404 })
     }
 
-    await dbQuery("UPDATE academic_module_notices SET views = views + 1 WHERE id = ?", [id])
+    await dbQuery(`UPDATE academic_module_notices SET views = views + 1 WHERE ${whereSql}`, whereParams)
 
     const updatedRows = await dbQuery<DbNoticeRow>(
-      "SELECT id, title, content, type, priority, status, target, publishDate, expiryDate, createdById, createdByName, createdByRole, createdAt, updatedAt, attachments, views, pinned FROM academic_module_notices WHERE id = ? LIMIT 1",
-      [id]
+      `SELECT id, title, content, type, priority, status, target, publishDate, expiryDate, createdById, createdByName, createdByRole, createdAt, updatedAt, attachments, views, pinned FROM academic_module_notices WHERE ${whereSql} LIMIT 1`,
+      whereParams
     )
 
     return NextResponse.json(rowToNotice(updatedRows[0]))
@@ -166,6 +173,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureNoticesTable()
 
     const { id } = await params
@@ -236,16 +246,19 @@ export async function PUT(
       return NextResponse.json({ error: "No updates provided" }, { status: 400 })
     }
 
-    const existing = await dbQuery<any>("SELECT id FROM academic_module_notices WHERE id = ? LIMIT 1", [id])
+    const whereSql = auth.isAdmin ? "id = ?" : "id = ? AND createdById = ?"
+    const whereParams = auth.isAdmin ? [id] : [id, auth.userId]
+
+    const existing = await dbQuery<any>(`SELECT id FROM academic_module_notices WHERE ${whereSql} LIMIT 1`, whereParams)
     if (!existing || existing.length === 0) {
       return NextResponse.json({ error: "Notice not found" }, { status: 404 })
     }
 
-    await dbQuery(`UPDATE academic_module_notices SET ${set.join(", ")} WHERE id = ?`, [...values, id])
+    await dbQuery(`UPDATE academic_module_notices SET ${set.join(", ")} WHERE ${whereSql}`, [...values, ...whereParams])
 
     const rows = await dbQuery<DbNoticeRow>(
-      "SELECT id, title, content, type, priority, status, target, publishDate, expiryDate, createdById, createdByName, createdByRole, createdAt, updatedAt, attachments, views, pinned FROM academic_module_notices WHERE id = ? LIMIT 1",
-      [id]
+      `SELECT id, title, content, type, priority, status, target, publishDate, expiryDate, createdById, createdByName, createdByRole, createdAt, updatedAt, attachments, views, pinned FROM academic_module_notices WHERE ${whereSql} LIMIT 1`,
+      whereParams
     )
 
     return NextResponse.json(rowToNotice(rows[0]))
@@ -263,18 +276,24 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureNoticesTable()
 
     const { id } = await params
     if (!id) {
       return NextResponse.json({ error: "Missing notice id" }, { status: 400 })
     }
-    const existing = await dbQuery<any>("SELECT id FROM academic_module_notices WHERE id = ? LIMIT 1", [id])
+    const whereSql = auth.isAdmin ? "id = ?" : "id = ? AND createdById = ?"
+    const whereParams = auth.isAdmin ? [id] : [id, auth.userId]
+
+    const existing = await dbQuery<any>(`SELECT id FROM academic_module_notices WHERE ${whereSql} LIMIT 1`, whereParams)
     if (!existing || existing.length === 0) {
       return NextResponse.json({ error: "Notice not found" }, { status: 404 })
     }
 
-    await dbQuery("DELETE FROM academic_module_notices WHERE id = ?", [id])
+    await dbQuery(`DELETE FROM academic_module_notices WHERE ${whereSql}`, whereParams)
 
     return NextResponse.json({ message: "Notice deleted successfully" })
   } catch (error) {

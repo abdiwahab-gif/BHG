@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Eye, Edit, Plus, Search, Trash2 } from "lucide-react"
 
-import { getAuditHeaders } from "@/lib/client-audit"
+import { getAuthAndAuditHeaders, getAuthHeaders } from "@/lib/client-auth"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -76,7 +76,7 @@ export function MembersTable() {
       params.set("page", "1")
       params.set("limit", "200")
 
-      const response = await fetch(`/api/members?${params.toString()}`, { signal })
+      const response = await fetch(`/api/members?${params.toString()}`, { signal, headers: { ...getAuthHeaders() } })
       const payload = (await response.json().catch(() => null)) as MembersListResponse | null
 
       if (!response.ok) {
@@ -97,14 +97,12 @@ export function MembersTable() {
     setActionError(null)
     setDeletingId(id)
     try {
-      const response = await fetch(`/api/members/${encodeURIComponent(id)}`,
-        {
-          method: "DELETE",
-          headers: {
-            ...getAuditHeaders(),
-          },
+      const response = await fetch(`/api/members/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: {
+          ...getAuthAndAuditHeaders(),
         },
-      )
+      })
       const payload = (await response.json().catch(() => null)) as { error?: string } | null
       if (!response.ok) {
         throw new Error(payload?.error || `Failed to delete member (HTTP ${response.status})`)

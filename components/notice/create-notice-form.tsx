@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { CreateNoticeRequest, NoticeTarget } from "@/types/notice"
 import { X, Upload } from "lucide-react"
+import { getAuthHeaders } from "@/lib/client-auth"
 
 const createNoticeSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -100,6 +101,7 @@ export function CreateNoticeForm({ onSuccess }: CreateNoticeFormProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify(formData),
       })

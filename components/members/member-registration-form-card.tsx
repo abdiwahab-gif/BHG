@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2, Upload, X } from "lucide-react"
-import { getAuditHeaders } from "@/lib/client-audit"
+import { getAuthAndAuditHeaders } from "@/lib/client-auth"
 
 const memberSchema = z.object({
   photo: z.string().optional().or(z.literal("")),
@@ -190,7 +190,7 @@ export function MemberRegistrationFormCard({
 
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json", ...getAuditHeaders() },
+        headers: { "Content-Type": "application/json", ...getAuthAndAuditHeaders() },
         body: JSON.stringify(data),
       })
 

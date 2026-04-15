@@ -4,6 +4,7 @@ import type { RowDataPacket } from "mysql2/promise"
 import { z } from "zod"
 import { dbQuery } from "@/lib/db"
 import { ensureMembersTable, toMemberDto, type DbMemberRow } from "./_db"
+import { requireAuth } from "@/lib/server-auth"
 
 export const runtime = "nodejs"
 
@@ -20,6 +21,9 @@ const createMemberSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureMembersTable()
 
     const { searchParams } = new URL(request.url)
@@ -34,6 +38,11 @@ export async function GET(request: NextRequest) {
 
     const where: string[] = []
     const params: unknown[] = []
+
+    if (!auth.isAdmin) {
+      where.push("createdById = ?")
+      params.push(auth.userId)
+    }
 
     if (search) {
       const like = `%${search}%`
@@ -89,6 +98,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureMembersTable()
 
     const parsed = createMemberSchema.safeParse(await request.json())
@@ -108,12 +120,13 @@ export async function POST(request: NextRequest) {
     const id = crypto.randomUUID()
     await dbQuery(
       `INSERT INTO academic_module_members (
-        id, fullName, gender, mobileNumber, email, deggen, shaqada, masuulkaaga, photo
+        id, createdById, fullName, gender, mobileNumber, email, deggen, shaqada, masuulkaaga, photo
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, NULLIF(?, '')
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, NULLIF(?, '')
       )`,
       [
         id,
+        auth.userId,
         parsed.data.fullName,
         parsed.data.gender,
         parsed.data.mobileNumber,

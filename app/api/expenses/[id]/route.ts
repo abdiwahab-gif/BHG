@@ -4,6 +4,7 @@ import { z } from "zod"
 import { dbQuery } from "@/lib/db"
 import { AuditLogger } from "@/lib/audit-logger"
 import { ensureExpensesTable, toExpenseDto, type DbExpenseRow } from "../_db"
+import { requireAuth } from "@/lib/server-auth"
 
 export const runtime = "nodejs"
 
@@ -23,12 +24,17 @@ export async function GET(_request: NextRequest, { params }: { params: { id: str
   try {
     await ensureExpensesTable()
 
+    const auth = requireAuth(_request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     const id = String(params.id || "").trim()
     if (!id) return NextResponse.json({ error: "Expense id is required" }, { status: 400 })
 
     const rows = await dbQuery<DbExpenseRow & RowDataPacket>(
-      "SELECT id, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? LIMIT 1",
-      [id],
+      auth.isAdmin
+        ? "SELECT id, createdById, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? LIMIT 1"
+        : "SELECT id, createdById, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? AND createdById = ? LIMIT 1",
+      auth.isAdmin ? [id] : [id, auth.userId],
     )
     if (!rows?.[0]) return NextResponse.json({ error: "Expense not found" }, { status: 404 })
 
@@ -43,19 +49,20 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   try {
     await ensureExpensesTable()
 
-    const actorId = request.headers.get("x-user-id")
-    const actorRole = request.headers.get("x-user-role") || ""
-    const actorName = request.headers.get("x-user-name") || ""
-    if (!actorId) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
-    }
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+    const actorId = auth.userId
+    const actorRole = auth.role
+    const actorName = request.headers.get("x-user-name") || auth.email || ""
 
     const id = String(params.id || "").trim()
     if (!id) return NextResponse.json({ error: "Expense id is required" }, { status: 400 })
 
     const beforeRows = await dbQuery<DbExpenseRow & RowDataPacket>(
-      "SELECT id, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? LIMIT 1",
-      [id],
+      auth.isAdmin
+        ? "SELECT id, createdById, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? LIMIT 1"
+        : "SELECT id, createdById, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? AND createdById = ? LIMIT 1",
+      auth.isAdmin ? [id] : [id, auth.userId],
     )
     if (!beforeRows?.[0]) return NextResponse.json({ error: "Expense not found" }, { status: 404 })
 
@@ -64,14 +71,23 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Invalid expense", details: parsed.error.errors }, { status: 400 })
     }
 
-    await dbQuery(
-      "UPDATE academic_module_expenses SET amount = ?, expenseType = ? WHERE id = ?",
-      [parsed.data.amount, parsed.data.expenseType, id],
-    )
+    if (auth.isAdmin) {
+      await dbQuery(
+        "UPDATE academic_module_expenses SET amount = ?, expenseType = ? WHERE id = ?",
+        [parsed.data.amount, parsed.data.expenseType, id],
+      )
+    } else {
+      await dbQuery(
+        "UPDATE academic_module_expenses SET amount = ?, expenseType = ? WHERE id = ? AND createdById = ?",
+        [parsed.data.amount, parsed.data.expenseType, id, auth.userId],
+      )
+    }
 
     const rows = await dbQuery<DbExpenseRow & RowDataPacket>(
-      "SELECT id, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? LIMIT 1",
-      [id],
+      auth.isAdmin
+        ? "SELECT id, createdById, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? LIMIT 1"
+        : "SELECT id, createdById, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? AND createdById = ? LIMIT 1",
+      auth.isAdmin ? [id] : [id, auth.userId],
     )
 
     const ipAddress = request.headers.get("x-forwarded-for") || "unknown"
@@ -100,23 +116,28 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   try {
     await ensureExpensesTable()
 
-    const actorId = request.headers.get("x-user-id")
-    const actorRole = request.headers.get("x-user-role") || ""
-    const actorName = request.headers.get("x-user-name") || ""
-    if (!actorId) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
-    }
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+    const actorId = auth.userId
+    const actorRole = auth.role
+    const actorName = request.headers.get("x-user-name") || auth.email || ""
 
     const id = String(params.id || "").trim()
     if (!id) return NextResponse.json({ error: "Expense id is required" }, { status: 400 })
 
     const beforeRows = await dbQuery<DbExpenseRow & RowDataPacket>(
-      "SELECT id, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? LIMIT 1",
-      [id],
+      auth.isAdmin
+        ? "SELECT id, createdById, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? LIMIT 1"
+        : "SELECT id, createdById, amount, expenseType, createdAt, updatedAt FROM academic_module_expenses WHERE id = ? AND createdById = ? LIMIT 1",
+      auth.isAdmin ? [id] : [id, auth.userId],
     )
     if (!beforeRows?.[0]) return NextResponse.json({ error: "Expense not found" }, { status: 404 })
 
-    await dbQuery("DELETE FROM academic_module_expenses WHERE id = ?", [id])
+    if (auth.isAdmin) {
+      await dbQuery("DELETE FROM academic_module_expenses WHERE id = ?", [id])
+    } else {
+      await dbQuery("DELETE FROM academic_module_expenses WHERE id = ? AND createdById = ?", [id, auth.userId])
+    }
 
     const ipAddress = request.headers.get("x-forwarded-for") || "unknown"
     const userAgent = request.headers.get("user-agent") || "unknown"

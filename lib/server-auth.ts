@@ -31,6 +31,39 @@ export function verifyAuthToken(token: string): AuthTokenPayload | null {
   }
 }
 
+export function isAdminRole(role: string | null | undefined): boolean {
+  const normalized = String(role || "").toLowerCase()
+  return normalized === "admin" || normalized === "super_admin"
+}
+
+export function requireAuth(request: NextRequest) {
+  const token = getBearerToken(request)
+  if (!token) {
+    return { ok: false as const, status: 401 as const, message: "Missing Authorization token" }
+  }
+
+  const payload = verifyAuthToken(token)
+  if (!payload) {
+    return { ok: false as const, status: 401 as const, message: "Invalid or expired token" }
+  }
+
+  const role = String(payload.role || "").toLowerCase()
+  const userId = String(payload.userId || payload.id || "").trim()
+  if (!userId) {
+    return { ok: false as const, status: 401 as const, message: "Invalid token payload" }
+  }
+
+  return {
+    ok: true as const,
+    token,
+    payload,
+    userId,
+    email: payload.email ? String(payload.email) : undefined,
+    role,
+    isAdmin: isAdminRole(role),
+  }
+}
+
 export function requireRole(request: NextRequest, allowedRoles: string[]) {
   const token = getBearerToken(request)
   if (!token) {

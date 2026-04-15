@@ -4,6 +4,7 @@ import type { RowDataPacket } from "mysql2/promise"
 import { z } from "zod"
 import { dbQuery } from "@/lib/db"
 import { ensureDonationsTable, toDonationDto, type DbDonationRow } from "./_db"
+import { requireAuth } from "@/lib/server-auth"
 
 export const runtime = "nodejs"
 
@@ -24,6 +25,9 @@ const createDonationSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureDonationsTable()
 
     const { searchParams } = new URL(request.url)
@@ -37,6 +41,10 @@ export async function GET(request: NextRequest) {
 
     const where: string[] = []
     const params: unknown[] = []
+    if (!auth.isAdmin) {
+      where.push("createdById = ?")
+      params.push(auth.userId)
+    }
     if (status) {
       where.push("status = ?")
       params.push(status)
@@ -74,6 +82,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = requireAuth(request)
+    if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status })
+
     await ensureDonationsTable()
 
     const parsed = createDonationSchema.safeParse(await request.json())
@@ -84,11 +95,11 @@ export async function POST(request: NextRequest) {
     const id = crypto.randomUUID()
     await dbQuery(
       `INSERT INTO academic_module_donations (
-        id, amount, donorName, mobileNumber, email, note, status
+        id, createdById, amount, donorName, mobileNumber, email, note, status
       ) VALUES (
-        ?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), 'PLEDGED'
+        ?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), 'PLEDGED'
       )`,
-      [id, parsed.data.amount, parsed.data.donorName, parsed.data.mobileNumber, parsed.data.email, parsed.data.note],
+      [id, auth.userId, parsed.data.amount, parsed.data.donorName, parsed.data.mobileNumber, parsed.data.email, parsed.data.note],
     )
 
     const rows = await dbQuery<DbDonationRow & RowDataPacket>(

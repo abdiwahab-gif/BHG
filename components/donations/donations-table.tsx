@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { DollarSign } from "lucide-react"
 
+import { getAuthHeaders } from "@/lib/client-auth"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -49,7 +51,7 @@ export function DonationsTable() {
       params.set("page", "1")
       params.set("limit", "200")
 
-      const response = await fetch(`/api/donations?${params.toString()}`, { signal })
+      const response = await fetch(`/api/donations?${params.toString()}`, { signal, headers: { ...getAuthHeaders() } })
       const payload = (await response.json().catch(() => null)) as DonationsListResponse | null
 
       if (!response.ok) {
