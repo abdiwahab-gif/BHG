@@ -41,9 +41,9 @@ interface ValidationErrors {
 
 const ROLES = [
   { value: "admin", label: "Admin" },
-  { value: "student", label: "Student" },
-  { value: "teacher", label: "Teacher" },
-  { value: "department_head", label: "Department Head" },
+  { value: "student", label: "Member" },
+  { value: "teacher", label: "Volunteer" },
+  { value: "department_head", label: "Coordinator" },
   { value: "super_admin", label: "Super Admin" },
 ]
 
@@ -355,7 +355,7 @@ export function UserForm({ user, onSuccess }: UserFormProps) {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="user@academic.edu"
+                    placeholder="user@bhg.example"
                     value={formData.email}
                     onChange={(e) => handleChange("email", e.target.value)}
                     disabled={isLoading}

@@ -139,6 +139,23 @@ export default function UsersPage() {
     return colors[role] || "bg-gray-100 text-gray-800"
   }
 
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "Admin"
+      case "super_admin":
+        return "Super Admin"
+      case "teacher":
+        return "Volunteer"
+      case "student":
+        return "Member"
+      case "department_head":
+        return "Coordinator"
+      default:
+        return String(role || "").replaceAll("_", " ")
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -195,9 +212,9 @@ export default function UsersPage() {
                   <SelectContent>
                     <SelectItem value="all">All Roles</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="teacher">Teacher</SelectItem>
-                    <SelectItem value="student">Student</SelectItem>
-                    <SelectItem value="department_head">Department Head</SelectItem>
+                    <SelectItem value="teacher">Volunteer</SelectItem>
+                    <SelectItem value="student">Member</SelectItem>
+                    <SelectItem value="department_head">Coordinator</SelectItem>
                     <SelectItem value="super_admin">Super Admin</SelectItem>
                   </SelectContent>
                 </Select>
@@ -279,9 +296,7 @@ export default function UsersPage() {
                         <TableCell className="font-medium">{user.name}</TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>
-                          <Badge className={getRoleBadgeColor(user.role)}>
-                            {user.role.replace("_", " ")}
-                          </Badge>
+                          <Badge className={getRoleBadgeColor(user.role)}>{getRoleLabel(user.role)}</Badge>
                         </TableCell>
                         <TableCell>
                           <Badge variant={user.isActive ? "default" : "secondary"}>

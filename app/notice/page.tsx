@@ -27,9 +27,7 @@ export default function NoticePage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Notice Board</h1>
-          <p className="text-muted-foreground">
-            Manage and publish notices for students, teachers, and staff
-          </p>
+          <p className="text-muted-foreground">Manage and publish updates for your community</p>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
@@ -41,9 +39,7 @@ export default function NoticePage() {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create New Notice</DialogTitle>
-              <DialogDescription>
-                Create and publish a new notice for your target audience
-              </DialogDescription>
+              <DialogDescription>Create and publish a new notice for the community</DialogDescription>
             </DialogHeader>
             <CreateNoticeForm onSuccess={() => setIsCreateDialogOpen(false)} />
           </DialogContent>

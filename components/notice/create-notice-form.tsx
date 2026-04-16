@@ -50,10 +50,10 @@ interface CreateNoticeFormProps {
 
 const targetOptions: { value: NoticeTarget; label: string }[] = [
   { value: 'all', label: 'Everyone' },
-  { value: 'students', label: 'Students' },
-  { value: 'teachers', label: 'Teachers' },
-  { value: 'staff', label: 'Staff' },
-  { value: 'parents', label: 'Parents' },
+  { value: 'students', label: 'Community Members' },
+  { value: 'teachers', label: 'Volunteers' },
+  { value: 'staff', label: 'Organizers' },
+  { value: 'parents', label: 'Partners' },
 ]
 
 export function CreateNoticeForm({ onSuccess }: CreateNoticeFormProps) {
@@ -197,9 +197,9 @@ export function CreateNoticeForm({ onSuccess }: CreateNoticeFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="general">General</SelectItem>
-                        <SelectItem value="academic">Academic</SelectItem>
-                        <SelectItem value="exam">Exam</SelectItem>
+                        <SelectItem value="general">Announcement</SelectItem>
+                        <SelectItem value="academic">Community Update</SelectItem>
+                        <SelectItem value="exam">Meeting</SelectItem>
                         <SelectItem value="holiday">Holiday</SelectItem>
                         <SelectItem value="event">Event</SelectItem>
                         <SelectItem value="urgent">Urgent</SelectItem>

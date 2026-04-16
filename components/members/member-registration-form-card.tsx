@@ -17,7 +17,7 @@ import { Loader2, Upload, X } from "lucide-react"
 import { getAuthAndAuditHeaders } from "@/lib/client-auth"
 
 const memberSchema = z.object({
-  photo: z.string().optional().or(z.literal("")),
+  photo: z.string().min(1, "Photo is required"),
   fullName: z.string().min(2, "Full name is required"),
   gender: z.string().min(1, "Gender is required").refine((v) => v === "male" || v === "female", "Gender is required"),
   mobileNumber: z.string().min(7, "Mobile number is required"),
@@ -262,24 +262,31 @@ export function MemberRegistrationFormCard({
               </Label>
               <input id="photo" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
               <p className="text-xs text-muted-foreground">Max file size: 5MB</p>
+              {errors.photo?.message && <p className="text-sm text-destructive">{errors.photo.message}</p>}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="fullName">Full Name (Magaca oo Dhameystiran)</Label>
-            <Input id="fullName" placeholder="Your full name" {...register("fullName")} aria-invalid={!!errors.fullName} />
+            <Input id="fullName" placeholder="Your full name" required {...register("fullName")} aria-invalid={!!errors.fullName} />
             {errors.fullName?.message && <p className="text-sm text-destructive">{errors.fullName.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="mobileNumber">Mobile Number</Label>
-            <Input id="mobileNumber" placeholder="e.g. +252xxxxxxxx" {...register("mobileNumber")} aria-invalid={!!errors.mobileNumber} />
+            <Input
+              id="mobileNumber"
+              placeholder="e.g. +252xxxxxxxx"
+              required
+              {...register("mobileNumber")}
+              aria-invalid={!!errors.mobileNumber}
+            />
             {errors.mobileNumber?.message && <p className="text-sm text-destructive">{errors.mobileNumber.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" {...register("email")} aria-invalid={!!errors.email} />
+            <Input id="email" type="email" placeholder="you@example.com" required {...register("email")} aria-invalid={!!errors.email} />
             {errors.email?.message && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
 
@@ -335,6 +342,7 @@ export function MemberRegistrationFormCard({
               <Input
                 placeholder="Enter where you live"
                 value={deggenOther}
+                required
                 onChange={(e) => {
                   const next = e.target.value
                   setDeggenOther(next)
@@ -382,6 +390,7 @@ export function MemberRegistrationFormCard({
               <Input
                 placeholder="Enter your job"
                 value={jobOther}
+                required
                 onChange={(e) => {
                   const next = e.target.value
                   setJobOther(next)
@@ -395,7 +404,13 @@ export function MemberRegistrationFormCard({
 
           <div className="space-y-2">
             <Label htmlFor="masuulkaaga">Masuulkaaga</Label>
-            <Input id="masuulkaaga" placeholder="Your responsible person" {...register("masuulkaaga")} aria-invalid={!!errors.masuulkaaga} />
+            <Input
+              id="masuulkaaga"
+              placeholder="Your responsible person"
+              required
+              {...register("masuulkaaga")}
+              aria-invalid={!!errors.masuulkaaga}
+            />
             {errors.masuulkaaga?.message && <p className="text-sm text-destructive">{errors.masuulkaaga.message}</p>}
           </div>
         </CardContent>

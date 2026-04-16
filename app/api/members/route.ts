@@ -9,7 +9,7 @@ import { requireAuth } from "@/lib/server-auth"
 export const runtime = "nodejs"
 
 const createMemberSchema = z.object({
-  photo: z.string().optional().or(z.literal("")),
+  photo: z.string().min(1).max(8_000_000),
   fullName: z.string().trim().min(2).max(255),
   gender: z.enum(["male", "female"]),
   mobileNumber: z.string().trim().min(7).max(50),

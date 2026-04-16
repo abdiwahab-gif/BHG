@@ -139,7 +139,6 @@ const menuItems: MenuItem[] = [
 ]
 
 export function Sidebar({ collapsed, onCollapsedChange, isMobile = false, onMobileClose }: SidebarProps) {
-  const [searchQuery, setSearchQuery] = useState("")
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const pathname = usePathname()
   const navRef = useRef<HTMLElement | null>(null)
@@ -167,14 +166,7 @@ export function Sidebar({ collapsed, onCollapsedChange, isMobile = false, onMobi
     return () => window.clearTimeout(t)
   }, [pathname, collapsed, isMobile])
 
-  const filteredMenuItems = menuItems.filter((item) => item.label.toLowerCase().includes(searchQuery.toLowerCase()))
-
-  const sections: MenuSection[] = (() => {
-    if (searchQuery.trim()) {
-      return [{ id: "search", label: "Results", items: filteredMenuItems }]
-    }
-    return [{ id: "main", label: "Menu", items: menuItems }]
-  })()
+  const sections: MenuSection[] = [{ id: "main", label: "Menu", items: menuItems }]
 
   const handleMenuItemClick = () => {
     if (isMobile && onMobileClose) {
@@ -442,15 +434,15 @@ export function Sidebar({ collapsed, onCollapsedChange, isMobile = false, onMobi
           transition={{ type: "spring", stiffness: 400 }}
         >
           <motion.div
-            className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden"
+            className="w-11 h-11 rounded-lg flex items-center justify-center overflow-hidden"
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.3 }}
           >
             <img
               src="/api/brand/logo"
               alt="Bah Habar Gobe logo"
-              width={32}
-              height={32}
+              width={44}
+              height={44}
               className="w-full h-full object-contain"
             />
           </motion.div>
@@ -485,28 +477,6 @@ export function Sidebar({ collapsed, onCollapsedChange, isMobile = false, onMobi
         )}
       </div>
 
-      {/* Search */}
-      <AnimatePresence>
-        {(!collapsed || isMobile) && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="p-4 border-b border-sidebar-border"
-          >
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sidebar-foreground/50 h-4 w-4" />
-              <Input
-                placeholder="Search menus..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-sidebar border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 transition-all duration-200 focus:ring-2 focus:ring-sidebar-ring"
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Navigation Menu */}
       <nav
@@ -562,19 +532,6 @@ export function Sidebar({ collapsed, onCollapsedChange, isMobile = false, onMobi
           </AnimatePresence>
         </motion.div>
 
-        <AnimatePresence>
-          {(!collapsed || isMobile) && searchQuery && filteredMenuItems.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center py-8 text-sidebar-foreground/50"
-            >
-              <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No menus found</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </nav>
 
       {/* Footer */}

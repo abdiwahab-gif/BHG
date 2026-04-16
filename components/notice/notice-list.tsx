@@ -85,6 +85,42 @@ const getTypeColor = (type: string) => {
   }
 }
 
+const getTypeLabel = (type: string) => {
+  switch (type) {
+    case "general":
+      return "Announcement"
+    case "academic":
+      return "Community Update"
+    case "exam":
+      return "Meeting"
+    case "holiday":
+      return "Holiday"
+    case "event":
+      return "Event"
+    case "urgent":
+      return "Urgent"
+    default:
+      return type
+  }
+}
+
+const getTargetLabel = (target: string) => {
+  switch (target) {
+    case "all":
+      return "Everyone"
+    case "students":
+      return "Community Members"
+    case "teachers":
+      return "Volunteers"
+    case "staff":
+      return "Organizers"
+    case "parents":
+      return "Partners"
+    default:
+      return target
+  }
+}
+
 export function NoticeList({ status, priority }: NoticeListProps) {
   const { notices, loading, error } = useNotices({
     initialFilters: { status, priority }
@@ -173,12 +209,10 @@ export function NoticeList({ status, priority }: NoticeListProps) {
                     <Badge className={getStatusColor(notice.status)}>
                       {notice.status}
                     </Badge>
-                    <Badge className={getTypeColor(notice.type)}>
-                      {notice.type}
-                    </Badge>
+                    <Badge className={getTypeColor(notice.type)}>{getTypeLabel(notice.type)}</Badge>
                     <span className="text-sm text-muted-foreground flex items-center">
                       <Target className="h-3 w-3 mr-1" />
-                      {notice.target.join(', ')}
+                      {notice.target.map(getTargetLabel).join(", ")}
                     </span>
                   </div>
                 </div>

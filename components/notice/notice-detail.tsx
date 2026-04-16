@@ -65,6 +65,42 @@ const getTypeColor = (type: string) => {
   }
 }
 
+const getTypeLabel = (type: string) => {
+  switch (type) {
+    case "general":
+      return "Announcement"
+    case "academic":
+      return "Community Update"
+    case "exam":
+      return "Meeting"
+    case "holiday":
+      return "Holiday"
+    case "event":
+      return "Event"
+    case "urgent":
+      return "Urgent"
+    default:
+      return type
+  }
+}
+
+const getTargetLabel = (target: string) => {
+  switch (target) {
+    case "all":
+      return "Everyone"
+    case "students":
+      return "Community Members"
+    case "teachers":
+      return "Volunteers"
+    case "staff":
+      return "Organizers"
+    case "parents":
+      return "Partners"
+    default:
+      return target
+  }
+}
+
 export function NoticeDetail({ notice }: NoticeDetailProps) {
   const isExpired = notice.expiryDate && new Date(notice.expiryDate) < new Date()
 
@@ -88,9 +124,7 @@ export function NoticeDetail({ notice }: NoticeDetailProps) {
           <Badge className={getStatusColor(notice.status)}>
             {notice.status}
           </Badge>
-          <Badge className={getTypeColor(notice.type)}>
-            {notice.type}
-          </Badge>
+          <Badge className={getTypeColor(notice.type)}>{getTypeLabel(notice.type)}</Badge>
           {isExpired && (
             <Badge className="bg-red-100 text-red-800 border-red-200">
               <AlertTriangle className="h-3 w-3 mr-1" />
@@ -158,7 +192,7 @@ export function NoticeDetail({ notice }: NoticeDetailProps) {
             <div className="flex items-center text-sm">
               <Target className="h-4 w-4 mr-2 text-muted-foreground" />
               <span className="text-muted-foreground mr-2">Target:</span>
-              <span>{notice.target.join(', ')}</span>
+              <span>{notice.target.map(getTargetLabel).join(", ")}</span>
             </div>
             
             <div className="flex items-center text-sm">

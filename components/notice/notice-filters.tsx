@@ -77,9 +77,9 @@ export function NoticeFilters({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="general">General</SelectItem>
-                <SelectItem value="academic">Academic</SelectItem>
-                <SelectItem value="exam">Exam</SelectItem>
+                <SelectItem value="general">Announcement</SelectItem>
+                <SelectItem value="academic">Community Update</SelectItem>
+                <SelectItem value="exam">Meeting</SelectItem>
                 <SelectItem value="holiday">Holiday</SelectItem>
                 <SelectItem value="event">Event</SelectItem>
                 <SelectItem value="urgent">Urgent</SelectItem>
@@ -111,10 +111,10 @@ export function NoticeFilters({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Targets</SelectItem>
-                <SelectItem value="students">Students</SelectItem>
-                <SelectItem value="teachers">Teachers</SelectItem>
-                <SelectItem value="staff">Staff</SelectItem>
-                <SelectItem value="parents">Parents</SelectItem>
+                <SelectItem value="students">Community Members</SelectItem>
+                <SelectItem value="teachers">Volunteers</SelectItem>
+                <SelectItem value="staff">Organizers</SelectItem>
+                <SelectItem value="parents">Partners</SelectItem>
               </SelectContent>
             </Select>
 
